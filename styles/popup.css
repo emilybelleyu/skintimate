@@ -1,0 +1,77 @@
+body {
+  background-color: rgb(233, 243, 225);
+  font-family: Georgia, serif;
+  text-align: center;
+  padding: 20px;
+  width: 330px;
+}
+
+h1 {
+  color: #feb5c3;
+  font-size: 20px;
+}
+
+.title-icon {
+  width: 32px;      
+  height: 32px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+button {
+  margin: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ffced8;
+  font-family: Georgia, serif;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #ffb6c1;
+}
+
+#results {
+  margin-top: 15px;
+  text-align: left;
+  font-size: 14px;
+  max-height: 250px;    /* Prevents popup from being too tall */
+  overflow-y: auto;     /* Scrollbar if needed */
+  padding-right: 5px;
+}
+
+.category {
+  margin-bottom: 10px;
+}
+
+.category-header {
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px;
+  background-color: #fff5f7;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-header:hover {
+  background-color: #ffe4ec;
+}
+
+.arrow {
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.ingredient-list.hidden {
+  display: none;
+}
+
+.ingredient-list {
+  margin: 5px 0 10px 20px;
+  padding: 0;
+  list-style-type: disc;
+}

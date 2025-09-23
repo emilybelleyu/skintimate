@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Skintimate",
+  "version": "1.0",
+  "description": "Scrapes ingredients from a product page and analyzes them using Cosmily API.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "https://api.cosmily.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "images/bow.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["scripts/content.js"]
+    }
+  ]
+}
