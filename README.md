@@ -25,7 +25,7 @@ A Chrome extension that lets you analyze the ingredients of skincare products an
 ## Dependencies
 
 - Chrome Extension APIs (scripting, storage)
-- [Cosmily API](https://api.cosmily.com) for ingredient analysis
+- [Cosmily API](https://docs.cosmily.com/) for ingredient analysis
 
 ## Notes
 
