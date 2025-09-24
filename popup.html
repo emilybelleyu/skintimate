@@ -11,9 +11,14 @@
   <img src="images/piano.png" alt="Piano" class="title-icon">
   </h1>
   <h4><i>ingred. decoder</i></h4>
-  <button id="analyzeBtn">Analyze</button>
-  <div id="status">Click "Analyze" to check ingredients.</div>
-  <div id="results"></div>
+  <div id="analyzePage">
+    <button id="analyzeBtn">Analyze Ingredients</button>
+    <p id="status"></p>
+  </div>
+
+  <div id="resultsPage" style="display: none;">
+    <div id="results"></div>
+  </div>
   <script src="popup.js"></script>
 </body>
 </html>
