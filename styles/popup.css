@@ -63,7 +63,7 @@ button:active {
   margin-top: 12px;
   text-align: left;
   font-size: 14px;
-  max-height: 250px; /* prevents popup from being too tall */
+  max-height: 400px; /* prevents popup from being too tall */
   overflow-y: auto;
   padding-right: 5px;
 }
@@ -87,11 +87,6 @@ button:active {
   background-color: #ffe4ec;
 }
 
-.arrow {
-  font-size: 12px;
-  margin-left: 8px;
-}
-
 .ingredient-list.hidden {
   display: none;
 }
@@ -100,6 +95,61 @@ button:active {
   margin: 5px 0 10px 20px;
   padding: 0;
   list-style-type: disc;
+}
+
+.ingredient-button {
+  background-color: transparent;
+  color:black;
+  margin: 5px;
+  padding: 8px 8px;
+  border-radius: 20px;
+  border: 2px solid #ccc;
+  font-size: smaller;
+  cursor: default;
+  box-shadow: none;
+}
+
+.ingredient-button:hover {
+  box-shadow: none;
+  cursor: default;
+  position: relative; /* tooltip positioning */
+}
+
+/* tooltip text hidden by default */
+.ingredient-button .tooltip {
+  visibility: hidden;
+  width: max-content;
+  max-width: 200px;
+  background-color: rgba(0,0,0,0.75);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 4px 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* above the button */
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.ingredient-button .tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* bottom of tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0,0,0,0.75) transparent transparent transparent;
+}
+
+.ingredient-button:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 
 .detail-view {
@@ -135,4 +185,31 @@ button:active {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.skin-type-sentence {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #333;
+  white-space: pre;
+}
+
+.fade-letter {
+  opacity: 0;
+  display: inline-block;
+  transition: opacity 0.05s ease-in;
+}
+
+.freefrom-section {
+  margin-top: 20px;
+}
+
+.freefrom-pill {
+  display: inline-block;
+  margin: 5px;
+  padding: 8px 10px;
+  border-radius: 20px;
+  font-size: smaller;
+  animation: fadeIn 0.3s ease-in-out;
 }
