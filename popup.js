@@ -1,55 +1,111 @@
-let lastAnalysisData = null; // store results so we can reuse without reloading
+let lastAnalysisData = null; // store results so can reuse without reloading
 
-// event listener for analyze button
 document.getElementById("analyzeBtn").addEventListener("click", analyzeIngredients);
 
-// main analysis func
+// main analysis func (highlight first, scrape fallback)
 async function analyzeIngredients() {
   const statusEl = document.getElementById("status");
-  statusEl.textContent = "Scraping ingredients...";
+  statusEl.textContent = "Getting ingredients...";
 
   // get current active tab
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  // inject scraping function into page
+  // inject code into page to capture highlighted text
   chrome.scripting.executeScript(
-    { target: { tabId: tab.id }, function: scrapeIngredientsFromPage },
-    async (results) => {
-      const rawIngredients = results?.[0]?.result;
-      if (!rawIngredients) return statusEl.textContent = "No ingredients found.";
+    {
+      target: { tabId: tab.id },
+      func: () => window.getSelection().toString().trim()
+    },
+    async (selectionResults) => {
+      let highlighted = selectionResults?.[0]?.result;
 
-      // preprocess ingredients
-      const ingredients = modifyInput(rawIngredients);
-      statusEl.textContent = "Analyzing...";
+      if (highlighted && highlighted.length > 0) {
+        showHighlightedText(highlighted);
 
-      try {
-        // send ingredients to API
-        const response = await fetch("https://api.cosmily.com/api/v1/analyze/ingredient_list", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ingredients })
-        });
-        const data = await response.json();
+        // wait ~3.5 second before showing results
+        setTimeout(() => {
+          processIngredients(highlighted, statusEl);
+        }, 4000);
+      } else {
+        chrome.scripting.executeScript(
+          { target: { tabId: tab.id }, function: scrapeIngredientsFromPage },
+          async (results) => {
+            const rawIngredients = results?.[0]?.result;
+            if (!rawIngredients) return statusEl.textContent = "No ingredients found to be scraped. Please highlight the text instead. 🐩🍵";
 
-        if (data.errors) {
-          console.error("API returned errors:", data.errors);
-          return statusEl.textContent = "Error analyzing ingredients.";
-        }
-
-        lastAnalysisData = data; // store globally
-
-        // hide analyze page, show results page
-        document.getElementById("analyzePage").style.display = "none";
-        document.getElementById("resultsPage").style.display = "block";
-
-        showResults(data);
-
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "Error analyzing ingredients.";
+            processIngredients(rawIngredients, statusEl);
+          }
+        );
       }
     }
   );
+}
+
+
+// helper: send ingredients to API + show results
+async function processIngredients(rawIngredients, statusEl) {
+  // preprocess ingredients
+  const ingredients = modifyInput(rawIngredients);
+  statusEl.textContent = "Analyzing...";
+
+  try {
+    const response = await fetch("https://api.cosmily.com/api/v1/analyze/ingredient_list", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ingredients })
+    });
+    const data = await response.json();
+
+    if (data.errors) {
+      console.error("API returned errors:", data.errors);
+      return statusEl.textContent = "Error analyzing ingredients.";
+    }
+
+    lastAnalysisData = data; // store globally
+
+    // hide analyze page, show results page
+    document.getElementById("analyzePage").style.display = "none";
+    document.getElementById("resultsPage").style.display = "block";
+
+    showResults(data);
+
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "Error analyzing ingredients.";
+  }
+}
+
+function showHighlightedText(text) {
+  const statusEl = document.getElementById("status");
+
+  // create container under status
+  let highlightEl = document.getElementById("highlightedIngredients");
+  if (!highlightEl) {
+    highlightEl = document.createElement("div");
+    highlightEl.id = "highlightedIngredients";
+    highlightEl.style.marginTop = "8px";
+    highlightEl.style.fontSize = "0.9em";
+    highlightEl.style.color = "#555";
+    statusEl.insertAdjacentElement("afterend", highlightEl);
+  }
+
+  highlightEl.innerHTML = ""; // clear previous
+
+  for (let char of text) {
+    const span = document.createElement("span");
+    span.textContent = char;
+    span.style.opacity = 0;
+    span.style.transition = "opacity 0.3s";
+    highlightEl.appendChild(span);
+  }
+
+  // fade in letter by letter
+  const letters = highlightEl.querySelectorAll("span");
+  letters.forEach((letter, i) => {
+    setTimeout(() => {
+      letter.style.opacity = 1;
+    }, i * 2.5);
+  });
 }
 
 // show results
@@ -68,7 +124,7 @@ function showResults(data) {
     document.getElementById("analyzePage").style.display = "block";
 
     resultsDiv.innerHTML = "";
-    statusEl.textContent = "No analysis available for this ingredient list.";
+    statusEl.textContent = "No analysis available, possibly an unopened dropdown. Please open dropdown or highlight text instead. 🐩🍵";
     return;
   }
 
